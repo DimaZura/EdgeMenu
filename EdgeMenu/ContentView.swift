@@ -7,16 +7,14 @@
 
 import SwiftUI
 import Combine
-import Foundation
 
 
 struct ContentView: View {
-
+    @StateObject var globalManager = GlobalManager.shared
+    
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
+            RightMenuView()
         }
         .padding()
     }

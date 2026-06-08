@@ -11,7 +11,7 @@ import SwiftUI
 struct EdgeMenuApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RightMenuView()
         }
     }
 }
