@@ -23,25 +23,28 @@ import AppKit
 //
 
 class GlobalManager : ObservableObject{
+    var log: Bool = false
+    
     static var shared = GlobalManager()
     
-    // размер ьекущего окна
+    // размер текущего окна
     var CurrentWindowSize : CGSize {
         return NSScreen.main?.frame.size ?? .zero
     }
     
     
     // флаг попадания курсора в угол
-    @Published var CoursorDetectedInAngle: Bool = false {
-        // при изменении
-        didSet {
-            // при изменении в активное состояние
-            if CoursorDetectedInAngle {
-//                // провести определение текущей программы
-//                DetectedActiveApplication()
-            }
-        }
-    }
+    @Published var CoursorDetectedInAngle: Bool = false
+//    {
+//        // при изменении
+//        didSet {
+//            // при изменении в активное состояние
+//            if CoursorDetectedInAngle {
+////                // провести определение текущей программы
+////                DetectedActiveApplication()
+//            }
+//        }
+//    }
     
     
     // текущая локация
@@ -81,7 +84,6 @@ class GlobalManager : ObservableObject{
             
         }
         
-        print("end")
     }
     
     
@@ -94,11 +96,11 @@ class GlobalManager : ObservableObject{
 //            print("Location: \(self.Location) \n x: \(x) y: \(y)")
             
             if (!CoursorDetectedInAngle && (Location.x > x-10 && Location.y > y-10)){
-                print("IN ANGLE")
+                if log {print("IN ANGLE")}
                 CoursorDetectedInAngle = true
             }
             else if (CoursorDetectedInAngle) && (Location.x < x-10 || Location.y < y-10){
-                print("OUT OF ANGLE")
+                if log {print("OUT OF ANGLE")}
                 CoursorDetectedInAngle = false
             }
         }
@@ -112,14 +114,26 @@ class GlobalManager : ObservableObject{
         var activeAppName: String = "none"
 
         if let activeApp = NSWorkspace.shared.frontmostApplication {
-            print("Открытое приложение: \(activeApp.localizedName ?? "none")")
-            print("Bundle ID: \(activeApp.bundleIdentifier ?? "none")")
+            if log{
+                print("Открытое приложение: \(activeApp.localizedName ?? "none")")
+                print("Bundle ID: \(activeApp.bundleIdentifier ?? "none")")
+            }
             activeAppName = activeApp.localizedName ?? activeAppName
         }
         
         return activeAppName
     }
     
+    func outOfRightCornerBounds(width: CGFloat, height: CGFloat) -> Bool {
+        
+        guard let MainScreen = NSScreen.main else {return false}
+
+        let x = MainScreen.frame.width
+        let y = MainScreen.frame.height
+        
+        return (Location.x <= x-width || Location.y < y-height)
+        
+    }
 }
 
 

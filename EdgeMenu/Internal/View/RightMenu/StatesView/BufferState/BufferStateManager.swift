@@ -1,5 +1,5 @@
 //
-//  BufferModeManager.swift
+//  BufferStateManager.swift
 //  EdgeMenu
 //
 //  Created by mac on 10.06.2026.
@@ -15,7 +15,7 @@ import Combine
 //
 
 
-class BufferModeManager: ObservableObject {
+class BufferStateManager: ObservableObject {
     
     
 }

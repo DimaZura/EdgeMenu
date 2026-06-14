@@ -12,34 +12,35 @@ struct RightMenuView: View {
     @StateObject var RightMenuManaget = RightMenuManager.shared
     
     var body: some View {
-       
-        VStack{
-            if (RightMenuManaget.isOpen) {
-                VStack {
-                    Image(systemName: "globe")
-                        .imageScale(.large)
-                        .foregroundStyle(.tint)
-                    Text("\(RightMenuManaget.windowWidth) - \(RightMenuManaget.windowHeight)")
-                    Text("\(RightMenuManaget.activeAppName)")
+        VStack {
+            // Отладочная подпись текущего типа состояния
+            Text("\(String(describing: type(of: RightMenuManaget.State)))")
+
+            if RightMenuManaget.isOpen {
+                Group {
+                    if RightMenuManaget.State is IdleState {
+                        
+                    } else if RightMenuManaget.State is GeneralState {
+                        GeneralStateView()
+                    } else if RightMenuManaget.State is AppCommandsState {
+                        AppCommandsStateView()
+                    } else if RightMenuManaget.State is BufferState {
+                        BufferStateView()
+                    } else {
+                        // fallback
+                        Text("Unknown state")
+                    }
                 }
-                .padding()
-                .frame(width: RightMenuManaget.windowWidth*0.15, height: RightMenuManaget.windowHeight*0.2)
-                .background(.orange)
             }
         }
-        .frame(width: RightMenuManaget.windowWidth*0.15, height: RightMenuManaget.windowHeight*0.2)
-                // Ключевой момент: используем системный материал как фон
-                .background(.ultraThinMaterial)
-                // Добавляем скругление углов, как у всех окон macOS
-                .cornerRadius(12)
-                // Рекомендуется добавить тонкую обводку, чтобы меню не сливалось с фоном
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color.secondary.opacity(0.2), lineWidth: 0.5)
-                )
-                .padding(10) // Отступ от краев окна
+        .frame(width: RightMenuManaget.windowWidth, height: RightMenuManaget.windowHeight)
+        .background(.ultraThinMaterial)
+        .cornerRadius(12)
+        .padding(0)
     }
 }
+
+
 
 #Preview {
     RightMenuView()
