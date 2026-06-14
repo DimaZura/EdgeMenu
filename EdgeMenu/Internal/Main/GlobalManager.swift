@@ -37,8 +37,8 @@ class GlobalManager : ObservableObject{
         didSet {
             // при изменении в активное состояние
             if CoursorDetectedInAngle {
-                // провести определение текущей программы
-                DetectedActiveApplication()
+//                // провести определение текущей программы
+//                DetectedActiveApplication()
             }
         }
     }
