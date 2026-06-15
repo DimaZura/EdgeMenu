@@ -26,20 +26,17 @@ struct FileListView: View {
             .cornerRadius(15)
             
             HStack{
+                
                 Rectangle()
                     .fill(Color(red: 0.2, green: 0.3, blue: 1))
                     .frame(width: 50, height: 50)
                     .cornerRadius(10)
+                    .overlay {
+                        Image(systemName: "trash")
+                    }
                 
                 Spacer()
-                Rectangle()
-                    .fill(Color(red: 0.2, green: 0.3, blue: 1))
-                    .frame(width: 70, height: 50)
-                    .cornerRadius(10)
-                Rectangle()
-                    .fill(Color(red: 0.2, green: 0.3, blue: 1))
-                    .frame(width: 70, height: 50)
-                    .cornerRadius(10)
+               
             }
             .padding(20)
         }

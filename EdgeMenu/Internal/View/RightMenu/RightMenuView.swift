@@ -35,10 +35,12 @@ struct RightMenuView: View {
             }
         }
         .frame(width: manager.windowWidth, height: manager.windowHeight)
-        .background(.ultraThinMaterial)
-        .background(Color.init( red: 0.8, green: 0.8, blue: 0.8, opacity: 1))
-        .cornerRadius(12)
-        .padding(0)
+        .liquidGlassStyle(cornerRadius: 24)
+
+//        .background(.ultraThinMaterial)
+//        .background(Color.init( red: 0.8, green: 0.8, blue: 0.8, opacity: 1))
+//        .cornerRadius(12)
+//        .padding(0)
     }
     
     
