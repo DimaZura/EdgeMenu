@@ -12,13 +12,13 @@ import Combine
 class RightMenuManager : ObservableObject {
     static var shared = RightMenuManager()
     
-    var log: Bool = true
+    var log: Bool = false
     
-    @Published var State: WidgetStates = IdleState()
+    @Published var State: WidgetStates = AppCommandsState()
     
     
     // Параметр флага открытия приложения
-    @Published var isOpen: Bool = false
+    @Published var isOpen: Bool = true
 
     // Параметр флага выделения (переноса курсором) файла
     var isFileFetch: Bool = false
@@ -35,7 +35,7 @@ class RightMenuManager : ObservableObject {
     // Ширина окна виджета
     var windowWidth: CGFloat = 300
     // Высота окна виджета
-    var windowHeight: CGFloat = 300
+    var windowHeight: CGFloat = 350
     
     
     // Множество всех подписок
@@ -73,7 +73,10 @@ class RightMenuManager : ObservableObject {
         windowWidth = windowSize.width*0.1
         windowHeight = windowSize.height*0.2
         
-        print("\(windowWidth) \(windowHeight)")
+        windowWidth = 400
+        windowHeight = 500
+        
+        if log {print("\(windowWidth) \(windowHeight)")}
     }
     
     
@@ -111,6 +114,24 @@ class RightMenuManager : ObservableObject {
     // изменение состояние автомата виджета
     func changeState(to state: WidgetStates) {
         State = state
+    }
+    
+    // изменение мода работы виджета
+    func switchMode(to mode: WidgetMode) {
+        State.switchMode(to: mode, coordinator: self)
+    }
+    
+    // получить значение текущего мода
+    func getMode() -> WidgetMode {
+        if State is GeneralState {
+            return .general
+        } else if State is AppCommandsState {
+            return .appCommands
+        } else if State is BufferState {
+            return .buffer
+        } else {
+            return .general
+        }
     }
     
     // скрыть виджет

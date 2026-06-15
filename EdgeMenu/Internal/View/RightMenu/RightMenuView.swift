@@ -9,22 +9,23 @@ import SwiftUI
 
 
 struct RightMenuView: View {
-    @StateObject var RightMenuManaget = RightMenuManager.shared
+    @StateObject var manager = RightMenuManager.shared
     
     var body: some View {
         VStack {
-            // Отладочная подпись текущего типа состояния
-            Text("\(String(describing: type(of: RightMenuManaget.State)))")
+            if manager.isOpen {
+                // хедер - меню навигации
+                NavigationPanel(currentMode: manager.getMode(), onModeChange: manager.switchMode)
 
-            if RightMenuManaget.isOpen {
+
                 Group {
-                    if RightMenuManaget.State is IdleState {
-                        
-                    } else if RightMenuManaget.State is GeneralState {
+                    if manager.State is IdleState {
+                      
+                    } else if manager.State is GeneralState {
                         GeneralStateView()
-                    } else if RightMenuManaget.State is AppCommandsState {
+                    } else if manager.State is AppCommandsState {
                         AppCommandsStateView()
-                    } else if RightMenuManaget.State is BufferState {
+                    } else if manager.State is BufferState {
                         BufferStateView()
                     } else {
                         // fallback
@@ -33,11 +34,15 @@ struct RightMenuView: View {
                 }
             }
         }
-        .frame(width: RightMenuManaget.windowWidth, height: RightMenuManaget.windowHeight)
+        .frame(width: manager.windowWidth, height: manager.windowHeight)
         .background(.ultraThinMaterial)
+        .background(Color.init( red: 0.8, green: 0.8, blue: 0.8, opacity: 1))
         .cornerRadius(12)
         .padding(0)
     }
+    
+    
+    
 }
 
 

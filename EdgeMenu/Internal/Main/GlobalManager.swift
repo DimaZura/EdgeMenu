@@ -23,7 +23,7 @@ import AppKit
 //
 
 class GlobalManager : ObservableObject{
-    var log: Bool = false
+    var log: Bool = true
     
     static var shared = GlobalManager()
     
@@ -53,6 +53,7 @@ class GlobalManager : ObservableObject{
         didSet {
             // провести проверку попадания в угол
             CheckTheCorners()
+            if log {print(Location)}
         }
     }
     
@@ -76,7 +77,7 @@ class GlobalManager : ObservableObject{
         // в главном потоке выполнения текущей программы
         // Главный поток обрабатывает рендеринг и пользовательский ввод
         
-        NSEvent.addGlobalMonitorForEvents(matching: [.mouseMoved]) { event in
+        NSEvent.addGlobalMonitorForEvents(matching: [.mouseMoved, .leftMouseDragged]) { event in
         
             self.Location = NSEvent.mouseLocation
             

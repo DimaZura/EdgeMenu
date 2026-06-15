@@ -9,7 +9,7 @@ import Foundation
 
 // состояния работы виджета
 enum WidgetMode {
-    case genetal        // Общее меню
+    case general        // Общее меню
     case appCommands    // Меню приложения
     case buffer         // Меню буфера
 }
@@ -88,7 +88,7 @@ class AppCommandsState: WidgetStates {
     
     func switchMode(to mode: WidgetMode, coordinator: RightMenuManager)
     {
-
+        switchModeTemplate(to: mode, coordinator: coordinator)
     }
 }
 
@@ -112,7 +112,7 @@ class GeneralState: WidgetStates {
     
     func switchMode(to mode: WidgetMode, coordinator: RightMenuManager)
     {
-
+        switchModeTemplate(to: mode, coordinator: coordinator)
     }
 }
 
@@ -134,7 +134,20 @@ class BufferState: WidgetStates
     
     func switchMode(to mode: WidgetMode, coordinator: RightMenuManager)
     {
-
+        switchModeTemplate(to: mode, coordinator: coordinator)
     }
 
+}
+
+
+func switchModeTemplate(to mode: WidgetMode, coordinator: RightMenuManager)
+{
+    switch mode {
+    case .appCommands:
+        coordinator.changeState(to: AppCommandsState())
+    case .general:
+        coordinator.changeState(to: GeneralState())
+    case .buffer:
+        coordinator.changeState(to: BufferState())
+    }
 }
