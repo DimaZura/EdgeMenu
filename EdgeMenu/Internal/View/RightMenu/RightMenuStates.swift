@@ -7,6 +7,14 @@
 
 import Foundation
 
+
+struct WidgetFrameConfig {
+    let minWidth: CGFloat
+    let maxWidth: CGFloat
+    let minHeight: CGFloat
+    let maxHeight: CGFloat
+}
+
 // состояния работы виджета
 enum WidgetMode {
     case general        // Общее меню
@@ -25,6 +33,26 @@ protocol WidgetStates {
     
     // изменение мода отображение (пользовательское действие)
     func switchMode(to mode: WidgetMode, coordinator: RightMenuManager)
+    
+    func onEnter(coordinator: RightMenuManager)
+    func onExit(coordinator: RightMenuManager)
+}
+
+
+extension WidgetStates {
+    func onEnter(coordinator: RightMenuManager) {}
+    func onExit(coordinator: RightMenuManager) {}
+    
+    var frameConfig: WidgetFrameConfig {
+            switch self {
+            case is IdleState:
+                return WidgetFrameConfig(minWidth: 100, maxWidth: 300, minHeight: 40, maxHeight: 55)
+            case is BufferState:
+                return WidgetFrameConfig(minWidth: 200, maxWidth: 400, minHeight: 150, maxHeight: 400)
+            default:
+                return WidgetFrameConfig(minWidth: 150, maxWidth: 350, minHeight: 100, maxHeight: 300)
+            }
+        }
 }
 
 
@@ -38,7 +66,7 @@ class IdleState: WidgetStates {
             if coordinator.isFileFetch {
                 coordinator.changeState(to: BufferState())
             }
-            else if coordinator.activeAssetIndex != 0 {
+            else if coordinator.OpenApplicationName != "" {
                 coordinator.changeState(to: AppCommandsState())
             }
             else {
@@ -101,7 +129,7 @@ class GeneralState: WidgetStates {
     }
     func handleOpenApplication(appName: String, coordinator: RightMenuManager) {
         // coordinator.activeAssetIndex = ...
-        if coordinator.activeAssetIndex != 0 {
+        if coordinator.OpenApplicationName != ""{
             coordinator.changeState(to: AppCommandsState())
         }
     }
@@ -135,6 +163,13 @@ class BufferState: WidgetStates
     func switchMode(to mode: WidgetMode, coordinator: RightMenuManager)
     {
         switchModeTemplate(to: mode, coordinator: coordinator)
+    }
+    
+    func onEnter(coordinator: RightMenuManager) {
+        BufferStateManager.shared.start()
+    }
+    func onExit(coordinator: RightMenuManager) {
+        BufferStateManager.shared.stop()
     }
 
 }

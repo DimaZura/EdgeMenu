@@ -8,26 +8,28 @@
 import Foundation
 import Combine
 
+// Головной менеджер вью бокового меню
 
 class RightMenuManager : ObservableObject {
     static var shared = RightMenuManager()
     
     var log: Bool = false
     
-    @Published var State: WidgetStates = AppCommandsState()
+    // Текущее состояние виджета                    (Параметр автомата)
+    // GeneralState - начальное состояние
+    @Published var State: WidgetStates = GeneralState()
     
-    
-    // Параметр флага открытия приложения
+    // Флаг открытия виджета                        (Параметр автомата)
     @Published var isOpen: Bool = true
 
-    // Параметр флага выделения (переноса курсором) файла
+    // Флаг выделения файла (переноса курсором)     (Параметр автомата)
     var isFileFetch: Bool = false
 
-    // Параметр названия активного приложения
+    // Названиу активного приложения                (Параметр автомата)
     var activeAppName: String = ""
     
-    // Параметр индекса ассета для отображения в виджете
-    var activeAssetIndex: Int = 0
+    // Название открытого приложения                (Параметр автомата)
+    var OpenApplicationName: String = ""
 
     
 
@@ -43,16 +45,13 @@ class RightMenuManager : ObservableObject {
     //  а пока они в множестве то существуют до удаления (deinit) самого класса ]
     private var cancellables = Set<AnyCancellable>()
     
-    
-    // ссылка на асинхронный метод определения выходы за границы меню
-    private var outOfBoundsTask: Task<Void, Never>?
-    
+        
     
     init() {
-        // подписка на изменение свойства CoursorDetectedInAngle
-        // [$ обозначает обращение не самому параметру в к потоку его изменения]
+        // подписка на изменение свойства GlobalManager::CoursorDetectedInAngle
+        // [$ обозначает обращение не самому параметру а к потоку его изменения]
         // sink создает саму подписку на этот поток
-        // weak sekf необходимо во избежение утечек памяти
+        // weak self необходимо во избежение утечек памяти
         GlobalManager.shared.$CoursorDetectedInAngle
             .sink{ [weak self] value in
                 // Разворачиваем weak self, чтобы безопасно использовать его как координатор
@@ -80,19 +79,22 @@ class RightMenuManager : ObservableObject {
     }
     
     
+    // ссылка на асинхронный метод определения выходы за границы меню
+    private var outOfBoundsTask: Task<Void, Never>?
+
     func monitorOutOfBounds() async {
         if log {print("monitorOutOfBounds")}
         
         while !Task.isCancelled {
             let isOut = GlobalManager.shared.outOfRightCornerBounds(width: windowWidth, height: windowHeight)
-            
+
             if isOut {
                 await MainActor.run {
                     self.State.handleCursor(inAngle: false, coordinator: self)
                 }
                 break
             }
-            
+        
             do {
                 try await Task.sleep(nanoseconds: 50_000_000)
             }
@@ -100,9 +102,7 @@ class RightMenuManager : ObservableObject {
                 break
             }
         }
-        
-        if log {print("monitorOutOfBounds done")}
-
+        if log {print("monitorOutOfBounds - end")}
     }
     
     
@@ -112,8 +112,10 @@ class RightMenuManager : ObservableObject {
     }
     
     // изменение состояние автомата виджета
-    func changeState(to state: WidgetStates) {
-        State = state
+    func changeState(to newState: WidgetStates) {
+        State.onExit(coordinator: self)
+        State = newState
+        State.onEnter(coordinator: self)
     }
     
     // изменение мода работы виджета

@@ -12,6 +12,6 @@ import SwiftUI
 
 struct AppCommandsStateView: View {
     var body: some View {
-        Text("AppCommands Mode")
+        Text("AppCommands Mode / Development")
     }
 }

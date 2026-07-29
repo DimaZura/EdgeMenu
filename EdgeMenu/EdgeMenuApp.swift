@@ -7,6 +7,10 @@
 
 import SwiftUI
 
+
+//  Доббавить состояние истории скопированных
+
+
 @main
 struct EdgeMenuApp: App {
     var body: some Scene {

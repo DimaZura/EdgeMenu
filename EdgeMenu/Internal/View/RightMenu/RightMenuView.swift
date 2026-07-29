@@ -7,8 +7,10 @@
 
 import SwiftUI
 
+// Головной класс отображения бокорого меню
 
 struct RightMenuView: View {
+    // получение shared головноего менеджера бокового меню
     @StateObject var manager = RightMenuManager.shared
     
     var body: some View {
@@ -32,6 +34,21 @@ struct RightMenuView: View {
                         Text("Unknown state")
                     }
                 }
+                .frame(
+                    minWidth: manager.State.frameConfig.minWidth,
+                    maxWidth: manager.State.frameConfig.maxWidth,
+                    minHeight: manager.State.frameConfig.minHeight,
+                    maxHeight: manager.State.frameConfig.maxHeight
+                )
+                
+                
+                
+                // Плашка для растягивания виджета
+                Spacer()
+                Rectangle()
+                    .frame(width: 120, height: 3)
+                    .cornerRadius(12)
+                    .padding(8)
             }
         }
         .frame(width: manager.windowWidth, height: manager.windowHeight)

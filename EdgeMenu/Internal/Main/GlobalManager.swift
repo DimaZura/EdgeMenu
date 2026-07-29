@@ -10,10 +10,10 @@ import Combine
 import AppKit
 
 
-// Мозговой класс проекта,
+// Класс взаимодействия с системой,
 // проводит основной мониторинг действий
 //
-//  1 - нахождения курсора
+//  1 - локация курсора
 //      Если курсор оказывается в верхнем правом углу то
 //      переводит флаг CoursorDetectedInAngle в активное состояние
 //
@@ -23,53 +23,36 @@ import AppKit
 //
 
 class GlobalManager : ObservableObject{
-    var log: Bool = true
-    
     static var shared = GlobalManager()
-    
-    // размер текущего окна
+    var log: Bool = false
+
+    // Размер текущего окна
     var CurrentWindowSize : CGSize {
         return NSScreen.main?.frame.size ?? .zero
     }
     
-    
-    // флаг попадания курсора в угол
+    // Флаг попадания курсора в угол
     @Published var CoursorDetectedInAngle: Bool = false
-//    {
-//        // при изменении
-//        didSet {
-//            // при изменении в активное состояние
-//            if CoursorDetectedInAngle {
-////                // провести определение текущей программы
-////                DetectedActiveApplication()
-//            }
-//        }
-//    }
-    
-    
-    // текущая локация
+
+    // Текущая локация
     @Published var Location: CGPoint = .zero {
-        // при изменении
         didSet {
-            // провести проверку попадания в угол
+            // проведение проверки попадания в угол
             CheckTheCorners()
             if log {print(Location)}
         }
     }
     
     
-    
-    
-    // при инициализации
+    // Инифиализация
     init(){
-        // запустить детектор положения курсора
+        // запуск детектора положения курсора
         StartCousorDetection()
     }
     
     
     // подписка на получение данных о положении курсора
     func StartCousorDetection(){
-
         // происходит регистрация блока кода, описанного ниже, в список выполняемых операций при
         // при выполнении event смещение курсора. Регистрация занимает минимальное количество времени
         // и функция продолжает свое выполнение дальше.
@@ -78,17 +61,13 @@ class GlobalManager : ObservableObject{
         // Главный поток обрабатывает рендеринг и пользовательский ввод
         
         NSEvent.addGlobalMonitorForEvents(matching: [.mouseMoved, .leftMouseDragged]) { event in
-        
             self.Location = NSEvent.mouseLocation
-            
-//            print("Глобальный курсор: \(self.Location.x) \(self.Location.y)")
-            
         }
         
     }
     
     
-    // проверка на попадание курсора в угол
+    // Проверка на попадание курсора в угол
     func CheckTheCorners() {
         if let MainScreen = NSScreen.main {
             let x = MainScreen.frame.width
@@ -109,7 +88,7 @@ class GlobalManager : ObservableObject{
     }
     
     
-    // получение данных о текуем открытом окне
+    // Определение текущего приложения
     func DetectedActiveApplication() -> String{
         
         var activeAppName: String = "none"
@@ -125,6 +104,7 @@ class GlobalManager : ObservableObject{
         return activeAppName
     }
     
+    // Проверка на выход за пределы виджета
     func outOfRightCornerBounds(width: CGFloat, height: CGFloat) -> Bool {
         
         guard let MainScreen = NSScreen.main else {return false}

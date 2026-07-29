@@ -12,6 +12,6 @@ import SwiftUI
 
 struct GeneralStateView: View {
     var body: some View {
-        Text("General Mode")
+        Text("General Mode / Development")
     }
 }

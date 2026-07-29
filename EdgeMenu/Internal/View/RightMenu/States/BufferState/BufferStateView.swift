@@ -18,19 +18,30 @@ struct BufferStateView: View {
         VStack {
             switch manager.subState {
             case .empty:
-                Text("Буфер пуст")
-            case .fileList:
+                EmptyBufferView(manager: manager)
+            case .fileList: 
                 FileListView(manager: manager)
-//            case .filePreview(let fileURL):
-//                // Пол
-//                FilePreviewView(manager: manager, url: fileURL)
-//                //URL(fileURLWithPath: "/file") - для формирования url
             }
         }
+        
         .padding(20)
     }
 }
 
+
 #Preview {
     BufferStateView()
+        .onAppear {
+            BufferStateManager.shared.start()
+        }
+        .onDisappear {
+            BufferStateManager.shared.stop()
+        }
+        .frame(width: 500, height: 500)
 }
+
+
+//            case .filePreview(let fileURL):
+//                // Пол
+//                FilePreviewView(manager: manager, url: fileURL)
+//                //URL(fileURLWithPath: "/file") - для формирования url

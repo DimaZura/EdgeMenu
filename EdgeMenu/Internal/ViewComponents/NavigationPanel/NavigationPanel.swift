@@ -10,28 +10,30 @@ import SwiftUI
 
 struct NavigationPanel: View {
     
-    // current selected mode
+    // Current selected mode
     @State var currentMode: WidgetMode
-    
-    @Namespace private var menuAnimation
-    
+    // Возможные состояния
     private let modes: [WidgetMode] = [.general, .appCommands, .buffer]
-    
+    // Обработчик изменения состояния
     let onModeChange: (WidgetMode) -> Void
-    
+    // Пространство для плавной анимации
+    @Namespace private var menuAnimation
+
     var body: some View {
         ZStack{
+            // Задний фон
             Rectangle()
                 .fill(Color.black.opacity(0.5))
                 .frame(width: 180, height: 40)
                 .cornerRadius(10)
             
+            // Список состояний
             HStack {
                 ForEach(modes.indices, id: \.self) { index in
                     NavigationPanel_Button(
                         mode: modes[index],
-                        matchedGeometryId: "capsule",
                         currentMode: $currentMode,
+                        matchedGeometryId: "capsule",
                         menuAnimation: menuAnimation
                     )
                     .padding(10)
@@ -44,10 +46,14 @@ struct NavigationPanel: View {
     }
 }
 
+// Кнопка изменения состояния
 struct NavigationPanel_Button: View {
+    // состояние этой кнопки
     var mode: WidgetMode
-    var matchedGeometryId: String
+    // текущее состояние виджета
     @Binding var currentMode: WidgetMode
+    // индекс фигуры для плавной анимации
+    var matchedGeometryId: String
     var menuAnimation: Namespace.ID
     
     // Динамическая схема (светлая/темная)
@@ -59,11 +65,14 @@ struct NavigationPanel_Button: View {
     
     
     var body: some View {
-        Button(action: {
+        Button(
+        action: {
             withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                // сменить состояние
                 currentMode = mode
             }
-        }, label: {
+        },
+        label: {
             if currentMode == mode {
                 Text("\(title(for: mode))")
                     .padding(6)
@@ -104,3 +113,12 @@ struct NavigationPanel_Button: View {
     NavigationPanel(currentMode: .general, onModeChange: { _ in })
         .padding(100)
 }
+
+
+//struct ListOfModes_Previews: PreviewProvider {
+//    static var previews: some View {
+//        NavigationPanel(currentMode: .buffer, onModeChange: { _ in })
+//        
+//        NavigationPanel(currentMode: .general, onModeChange: { _ in })
+//    }
+//}
