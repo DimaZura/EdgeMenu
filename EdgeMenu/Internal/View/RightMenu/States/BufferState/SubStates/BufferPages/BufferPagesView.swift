@@ -24,7 +24,6 @@ struct BufferPagesView: View {
                                 withAnimation(.spring(response: 0.25, dampingFraction: 0.75)) {
                                     manager.setSelectedPage(id: page.id)
                                 }
-                            
                             },
                             onDelete: {
                                 withAnimation(.easeInOut(duration: 0.2)) {
@@ -139,11 +138,7 @@ struct PageHeader: View {
                 .stroke(isSelected ? Color.gray.opacity(0.2) : Color.clear, lineWidth: 1)
         )
         .shadow(color: isSelected ? Color.black.opacity(0.05) : Color.clear, radius: 2, x: 0, y: 1)
-        // 1. Включение редактирования по двойному клику
-        .onTapGesture(count: 2) {
-            startEditing()
-        }
-        // 2. Включение редактирования через контекстное меню (правый клик)
+        // Включение редактирования через контекстное меню (правый клик)
         .contextMenu {
             Button("Переименовать") {
                 startEditing()

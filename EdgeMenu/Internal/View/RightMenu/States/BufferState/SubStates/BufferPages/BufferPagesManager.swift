@@ -51,6 +51,7 @@ final class BufferPagesManager: ObservableObject {
     
     /// Выбор страницы
     func setSelectedPage(id: UUID) {
+        print("setSelectedPage")
         selectedPageId = id
     }
     
@@ -58,11 +59,13 @@ final class BufferPagesManager: ObservableObject {
     
     /// Создание новой страницы
     func createNewPage(_ title: String = "Новая страница") {
+        print("createNewPage")
         pages.append(.init(title: title, files: []))
     }
     
     /// Удаление страницы
     func deletePage(at id: UUID) {
+        print("deletePage")
         pages.removeAll { $0.id == id }
         if selectedPageId == id {
             selectedPageId = pages.first?.id
