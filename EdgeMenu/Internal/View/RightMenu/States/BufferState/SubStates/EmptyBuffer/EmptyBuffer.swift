@@ -13,7 +13,6 @@ import SwiftUI
 struct EmptyBufferView: View {
     // Если менеджер передается снаружи из родителя,
     // лучше использовать @ObservedObject вместо @StateObject
-    @ObservedObject var manager: BufferStateManager
 
     var body: some View {
         VStack(spacing: 8) {
@@ -51,10 +50,10 @@ struct EmptyBufferView: View {
 
 // Превью для удобной отладки прямо в Xcode
 #Preview {
-    EmptyBufferView(manager: BufferStateManager.shared)
+    EmptyBufferView()
         .frame(width: 280, height: 120)
         .padding()
 }
 #Preview {
-    EmptyBufferView(manager: BufferStateManager.shared)
+    EmptyBufferView()
 }

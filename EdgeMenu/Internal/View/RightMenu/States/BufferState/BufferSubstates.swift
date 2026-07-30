@@ -12,7 +12,7 @@ import Foundation
 //  fileList - отображается список файлов
 enum BufferSubState {
     case empty
-    case fileList
+    case bufferPages
 }
 
 //protocol BufferSubStateProtocol {

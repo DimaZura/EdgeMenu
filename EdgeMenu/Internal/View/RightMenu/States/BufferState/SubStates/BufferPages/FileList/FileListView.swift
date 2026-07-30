@@ -10,13 +10,17 @@ import SwiftUI
 import Combine
 
 struct FileListView: View {
-    @StateObject var manager: BufferStateManager
+    @StateObject var manager: BufferPagesManager = .shared
+    var files: [URL] = []
     
     var body: some View {
         GeometryReader { geometry in
             VStack{
-                ListOfFilesView(files: manager.fileList)
-                Spacer()
+                if files.isEmpty {
+                    EmptyBufferView()
+                } else {
+                    ListOfFilesView(files: files)
+                }
                 ActionButtonListView(manager: manager)
                 
             }
@@ -25,14 +29,7 @@ struct FileListView: View {
     }
 }
 #Preview {
-    FileListView(manager: BufferStateManager.shared)
-        .onAppear {
-            BufferStateManager.shared.start()
-            BufferStateManager.shared.newFileInPasteboard([
-                URL(fileURLWithPath: "/Users/mac/Desktop/test1.png"),
-                URL(fileURLWithPath: "/Users/mac/Desktop/text.txt"),
-            ])
-        }
+    FileListView(manager: BufferPagesManager.shared)
 }
 
 
@@ -81,7 +78,7 @@ struct ListOfFilesView: View {
 struct ActionButtonListView: View {
     // Используем @ObservedObject, чтобы кнопки могли динамически
     // меняться (например, блокироваться, если буфер пуст)
-    @ObservedObject var manager: BufferStateManager
+    @ObservedObject var manager: BufferPagesManager
     
     var body: some View {
         HStack(spacing: 12) {
@@ -90,8 +87,17 @@ struct ActionButtonListView: View {
                 systemName: "trash",
                 title: "Очистить",
                 role: .destructive, // Делает акцент на опасном действии (красноватый оттенок при наведении)
-                isDisabled: manager.fileList.isEmpty,
-                onTap: manager.clearBuffer
+                isDisabled: manager.currentPageIsEmpty(),
+                onTap: manager.clearSelectedPage
+            )
+            
+            Spacer()
+            
+            ActionButtonView(
+                systemName: "square.and.arrow.up",
+                title: "Вставить",
+                onTap: manager.addFilesFromBuffer
+
             )
             
             Spacer()
@@ -99,10 +105,12 @@ struct ActionButtonListView: View {
             // Кнопка скопировать всё
             ActionButtonView(
                 systemName: "doc.on.doc.fill",
-                title: "Вставить все",
-                isDisabled: manager.fileList.isEmpty,
-                onTap: manager.copyAllBuffer
+                title: "Скопировать всё",
+                isDisabled: manager.currentPageIsEmpty(),
+                onTap: manager.copyAllBufferOfPage
             )
+            
+          
         }
         .padding(.horizontal, 4)
     }
@@ -166,7 +174,7 @@ struct ActionButtonView: View {
 
 // MARK: - Preview для Xcode
 #Preview {
-    ActionButtonListView(manager: BufferStateManager.shared)
+    ActionButtonListView(manager: BufferPagesManager.shared)
         .padding()
         .frame(width: 300)
 }

@@ -16,12 +16,8 @@ struct BufferStateView: View {
     
     var body: some View {
         VStack {
-            switch manager.subState {
-            case .empty:
-                EmptyBufferView(manager: manager)
-            case .fileList: 
-                FileListView(manager: manager)
-            }
+            BufferPagesView()
+
         }
         
         .padding(20)
@@ -37,7 +33,7 @@ struct BufferStateView: View {
         .onDisappear {
             BufferStateManager.shared.stop()
         }
-        .frame(width: 500, height: 500)
+        .frame(width: 600, height: 600)
 }
 
 
