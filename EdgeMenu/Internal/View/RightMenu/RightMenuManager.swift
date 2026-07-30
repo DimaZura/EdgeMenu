@@ -35,9 +35,9 @@ class RightMenuManager : ObservableObject {
 
     
     // Ширина окна виджета
-    var windowWidth: CGFloat = 300
+    var windowWidth: CGFloat = 600
     // Высота окна виджета
-    var windowHeight: CGFloat = 350
+    var windowHeight: CGFloat = 600
     
     
     // Множество всех подписок

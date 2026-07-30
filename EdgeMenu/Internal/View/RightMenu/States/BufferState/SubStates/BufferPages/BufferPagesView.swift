@@ -8,14 +8,16 @@
 import Foundation
 import SwiftUI
 
+// MARK: - ОТОБРАЖЕНИЕ СУБСОСТОЯНИЯ СПИСКА ВКЛАДОК
 struct BufferPagesView: View {
     @ObservedObject var manager: BufferPagesManager = .shared
     
     var body: some View {
         VStack(spacing: 8) {
-            // 1. Панель вкладок (Horizontal Scroll)
+            /// `Панель вкладок (Horizontal Scroll)`
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 6) {
+                    /// список вкладок
                     ForEach(manager.pages) { page in
                         PageHeader(
                             page: page,
@@ -32,7 +34,7 @@ struct BufferPagesView: View {
                             }
                         )
                     }
-                    
+                    /// кнопка создания вкладки
                     CreatePageButton(onTap: {
                         withAnimation(.spring(response: 0.25, dampingFraction: 0.75)) {
                             manager.createNewPage()
@@ -44,7 +46,7 @@ struct BufferPagesView: View {
             }
             .frame(height: 36)
             
-            // 2. Отображение контента ТЕКУЩЕЙ страницы
+            /// `Отображение контента ТЕКУЩЕЙ страницы`
             if let currentPage = manager.getCurrentPage() {
                 PageView(page: currentPage)
                     .transition(.opacity.combined(with: .scale(scale: 0.98)))
@@ -55,25 +57,22 @@ struct BufferPagesView: View {
     }
 }
 
-// MARK: - Preview для Xcode
 #Preview {
     BufferPagesView()
         .padding()
         .frame(width: 500, height: 500)
 }
 
-
-// MARK: - Шапка отдельной вкладки (стиль вкладок браузера)
+// MARK: - Шапка отдельной вкладки
 struct PageHeader: View {
     let page: BufferPage
     let isSelected: Bool
     let onSelect: () -> Void
     let onDelete: () -> Void
     
-    // Менеджер для вызова метода переименования
     @ObservedObject var manager: BufferPagesManager = .shared
     
-    // Состояния для редактирования имени
+    /// Состояния для редактирования имени
     @State private var isEditing = false
     @State private var tempTitle = ""
     @State private var isHovered = false
@@ -84,8 +83,9 @@ struct PageHeader: View {
             Image(systemName: page.iconName)
                 .font(.system(size: 11, weight: isSelected ? .semibold : .regular))
             
-            // Если включен режим редактирования — показываем поле ввода TextField
+            /// `ОТОБРАЖЕНИЕ ИМЕНИ С ВОЗСОЖНОСТЬЮ РЕДАКТИРОВАНИЯ`
             if isEditing {
+                /// Если включен режим редактирования — показываем поле ввода TextField
                 TextField("Название", text: $tempTitle, onCommit: saveTitle)
                     .textFieldStyle(.plain)
                     .font(.system(size: 12, weight: .semibold, design: .rounded))
@@ -94,7 +94,7 @@ struct PageHeader: View {
                         saveTitle()
                     }
             } else {
-                // В обычном режиме — просто текст с реакцией на клики
+                /// В обычном режиме — просто текст с реакцией на клики
                 Text(page.title)
                     .font(.system(size: 12, weight: isSelected ? .semibold : .medium, design: .rounded))
                     .lineLimit(1)
@@ -103,7 +103,7 @@ struct PageHeader: View {
                     }
             }
 
-            // Кнопка закрытия
+            /// `КНОПКА УДАЛЕНИЯ ВКАДКИ`
             if !page.isPinned && !isEditing {
                 Button(action: onDelete) {
                     Image(systemName: "xmark")
@@ -138,7 +138,7 @@ struct PageHeader: View {
                 .stroke(isSelected ? Color.gray.opacity(0.2) : Color.clear, lineWidth: 1)
         )
         .shadow(color: isSelected ? Color.black.opacity(0.05) : Color.clear, radius: 2, x: 0, y: 1)
-        // Включение редактирования через контекстное меню (правый клик)
+        /// включение редактирования через контекстное меню (правый клик)
         .contextMenu {
             Button("Переименовать") {
                 startEditing()
@@ -157,6 +157,7 @@ struct PageHeader: View {
         }
     }
     
+    /// Метод инициальзатор режима редактирования
     private func startEditing() {
 
         tempTitle = page.title
@@ -165,18 +166,20 @@ struct PageHeader: View {
 
     }
     
+    /// Завершение редактирования и сохранение результатов
     private func saveTitle() {
         guard isEditing else { return }
         isEditing = false
         print("saveTitle")
         
-        // ВЫЗОВ МЕТОДА ПЕРЕИМЕНОВАНИЯ
+        /// вызов метода переименования
         if !tempTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             print (tempTitle)
             manager.renameCurrentPage(to: tempTitle)
         }
     }
 }
+
 // MARK: - Кнопка создания новой страницы (+)
 struct CreatePageButton: View {
     let onTap: () -> Void
@@ -202,8 +205,7 @@ struct CreatePageButton: View {
     }
 }
 
-
-
+// MARK: - ОТОБРАЖЕНИЕ ВКАЛАДКИ
 struct PageView: View {
     let page: BufferPage
     @ObservedObject var manager: BufferPagesManager = .shared
@@ -211,7 +213,10 @@ struct PageView: View {
     var body: some View {
         VStack(spacing: 8) {
         
-            FileListView(files: page.files)
+            /// Отображение списка файлов
+            ListOfFilesWrapperView(files: page.files)
+            /// Отображение кнопок действий
+            ActionButtonListView()
 
             
         }
@@ -227,7 +232,6 @@ struct PageView: View {
     }
 }
 
-// MARK: - Preview для Xcode
 #Preview {
     VStack(spacing: 12) {
         // Вариант с файлами

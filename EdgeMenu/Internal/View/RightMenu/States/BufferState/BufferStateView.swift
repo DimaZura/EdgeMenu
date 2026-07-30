@@ -9,7 +9,7 @@ import Foundation
 import Combine
 import SwiftUI
 
-//  Отображение режима буффера обмена
+//  ОТОБРАЖЕНИЕ СОСТОЯНИЯ БУФЕРА
 
 struct BufferStateView: View {
     @StateObject var manager = BufferStateManager.shared
@@ -17,7 +17,6 @@ struct BufferStateView: View {
     var body: some View {
         VStack {
             BufferPagesView()
-
         }
         
         .padding(20)
@@ -35,9 +34,3 @@ struct BufferStateView: View {
         }
         .frame(width: 600, height: 600)
 }
-
-
-//            case .filePreview(let fileURL):
-//                // Пол
-//                FilePreviewView(manager: manager, url: fileURL)
-//                //URL(fileURLWithPath: "/file") - для формирования url

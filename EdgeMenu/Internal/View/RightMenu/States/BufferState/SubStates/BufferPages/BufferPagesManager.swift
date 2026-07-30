@@ -10,6 +10,8 @@ import Combine
 import AppKit
 import UniformTypeIdentifiers
 
+/// СТРУКТУРА ВКЛАДКИ БУФЕРА
+
 struct BufferPage: Identifiable, Hashable {
     let id: UUID
     var title: String
@@ -25,37 +27,74 @@ struct BufferPage: Identifiable, Hashable {
         self.isPinned = isPinned
     }
     
+    /// Добавить файл во вкладку
     mutating func addFile(_ newFile: URL) {
         files.insert(newFile, at: 0)
     }
     
+    /// Добавить файлы во вкладку
     mutating func addFiles(_ newFiles: [URL]) {
         let existingSet = Set(files)
         let uniqueNew = newFiles.filter { !existingSet.contains($0) }
         files.insert(contentsOf: uniqueNew, at: 0)
     }
     
-    mutating func clear() {
+    /// Очистить вкладку
+    mutating func clearAll() {
         files.removeAll()
+    }
+    
+    /// Удалить файл из вкладки
+    mutating func remove(file: URL) {
+        files.removeAll { $0 == file }
     }
 }
 
+/// МЕНЕДЖЕР СУБСОСТОЯНИЯ СПИСКА ВКЛАДОК БУФЕРА
 
 final class BufferPagesManager: ObservableObject {
     static let shared = BufferPagesManager()
 
-    
+    /// Страницы
     @Published var pages: [BufferPage] = []
+    /// Выделенная страница
     @Published var selectedPageId: UUID?
-    
+    /// Выделенные файлы
+    @Published var selectedFiles: Set<URL> = []
+
     
     /// Выбор страницы
     func setSelectedPage(id: UUID) {
         print("setSelectedPage")
+        if (selectedPageId != id) {
+            /// при смене на другую вкладку
+            /// список выделенных файлов
+            /// обнуляется
+            selectedFiles.removeAll()
+        }
         selectedPageId = id
+        
     }
     
-    /// МЕТОДЫ ВЗАИМОДЕЙСТВИЯ С МАССИВОМ СТРАНИЦ
+    /// Изменение состояния выделения для конкретного url
+    /// если файл находился в списке выделенных
+    /// `selectedFiles.contains(url) == true`
+    /// то он удалется из списка, в ином случае добавляется в него
+    func toggleSelection(for url: URL) {
+        if selectedFiles.contains(url) {
+            selectedFiles.remove(url)
+        } else {
+            selectedFiles.insert(url)
+        }
+    }
+    
+    /// Скопировать в буффер выделенные объекты
+    func copySelectedFiles() {
+        inToOSBuffer(urls: Array(selectedFiles))
+    }
+
+    
+    /// `МЕТОДЫ ВЗАИМОДЕЙСТВИЯ С МАССИВОМ ВКЛАДОК`
     
     /// Создание новой страницы
     func createNewPage(_ title: String = "Новая страница") {
@@ -72,17 +111,20 @@ final class BufferPagesManager: ObservableObject {
         }
     }
     
-    /// МЕТОДЫ ВЗАИМОДЕЙСТВИЯ С ОБЪЕКТОМ СТРАНИЦЫ
+    /// `МЕТОДЫ ВЗАИМОДЕЙСТВИЯ С ОБЪЕКТОМ ВКЛАДКИ`
 
+    /// Получить выбранную страницу
     func getCurrentPage() -> BufferPage? {
         pages.first(where: { $0.id == selectedPageId })
     }
     
+    // Проверить пуста ли выбранная страница
     func currentPageIsEmpty() -> Bool {
         guard let currentPage = pages.first(where: { $0.id == selectedPageId }) else { return true }
         return currentPage.files.isEmpty
     }
     
+    /// Удалить выбранную страницу
     func renameCurrentPage(to title: String) {
         // Убираем лишние пробелы по краям
         let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -95,14 +137,25 @@ final class BufferPagesManager: ObservableObject {
         pages[index].title = trimmedTitle
     }
     
-    /// Обработчик нажатия на кнопку очистки буфера выделенной страницы
+    /// Обработчик нажатия на кнопку очистки буфера выделенной вкладки
     func clearSelectedPage() {
         guard let index = pages.firstIndex(where: { $0.id == selectedPageId }) else {return}
 
-        pages[index].clear()
+        pages[index].clearAll()
+        selectedFiles.removeAll()
     }
     
-    /// Обработчик добавления файла в буфер выделенной страницы
+    /// Обработчик удаления выделенных файлов
+    func removeSelectedFiles() {
+        guard let index = pages.firstIndex(of: pages.first(where: { $0.id == selectedPageId })!) else {return}
+        
+        for url in selectedFiles {
+            pages[index].remove(file: url)
+            selectedFiles.remove(url)
+        }
+    }
+    
+    /// Обработчик добавления файла в буфер выделенной вкладки
     func newFilesToSelectedPage(_ urls: [URL]) {
         print("newFilesToSelectedPage")
         guard let index = pages.firstIndex(where: { $0.id == selectedPageId }) else {return}
@@ -120,7 +173,7 @@ final class BufferPagesManager: ObservableObject {
                     break
                 }
             }
-            
+            /// если уникален то добавляем
             if isUnique {
                 print(url)
                 pages[index].addFile(url)
@@ -128,7 +181,7 @@ final class BufferPagesManager: ObservableObject {
         }
     }
 
-    /// Добавление файлов из буфера
+    /// Добавление файлов в буфер вкладки из буфера системы
     func addFilesFromBuffer() {
         print("addFilesFromBuffer")
         let pasteboard = NSPasteboard.general
@@ -139,7 +192,8 @@ final class BufferPagesManager: ObservableObject {
         }
 
     }
-
+    
+    /// Скопировать все объекты выделенной вкладки
     func copyAllBufferOfPage() {
         guard let currentPage = pages.first(where: { $0.id == selectedPageId }) else { return }
         let fileList = currentPage.files
@@ -149,12 +203,18 @@ final class BufferPagesManager: ObservableObject {
         let fileURLs = fileList.filter { $0.isFileURL }
         guard !fileURLs.isEmpty else { return }
         
+        inToOSBuffer(urls: fileURLs)
+    }
+    
+    
+    /// Скопировать объекты в буфер системы
+    func inToOSBuffer(urls: [URL]) {
         /// открытие и очистка буфера
         let pasteboard = NSPasteboard.general
         pasteboard.clearContents()
 
         
-        for url in fileURLs {
+        for url in urls {
             
             /// создание объекта для буфера
             let item = NSPasteboardItem()
@@ -186,7 +246,6 @@ final class BufferPagesManager: ObservableObject {
             pasteboard.writeObjects([item])
             
         }
-
     }
 
    

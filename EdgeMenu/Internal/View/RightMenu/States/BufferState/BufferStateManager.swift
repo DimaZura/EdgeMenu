@@ -10,7 +10,7 @@ import Combine
 import AppKit
 import UniformTypeIdentifiers
 
-// Менеджер состояни буфера
+/// МЕНЕДЖЕР СОСТОЯНИЯ БУФЕРА
 
 class BufferStateManager: ObservableObject {
     static let shared = BufferStateManager()
@@ -18,9 +18,6 @@ class BufferStateManager: ObservableObject {
     // Состояние буфера
     @Published var subState: BufferSubState = .empty
             
-    init() {
-
-    }
     
     /// Запускается при переходе в состояние буфера
     func start() {
@@ -32,14 +29,11 @@ class BufferStateManager: ObservableObject {
         print("BufferStateManager: stop")
     }
         
+    
+    /// Изменяет субсостояние буфера
     func changeState(_ state: BufferSubState) {
         subState = state
     }
-    
-        
-    
-    
-
     
     
 }
