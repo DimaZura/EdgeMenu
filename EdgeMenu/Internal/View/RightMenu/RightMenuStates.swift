@@ -8,12 +8,7 @@
 import Foundation
 
 
-struct WidgetFrameConfig {
-    let minWidth: CGFloat
-    let maxWidth: CGFloat
-    let minHeight: CGFloat
-    let maxHeight: CGFloat
-}
+
 
 // состояния работы виджета
 enum WidgetMode {
@@ -24,8 +19,6 @@ enum WidgetMode {
 
 
 protocol WidgetStates {
-    // изменение состояние наведения курсора на угол
-    func handleCursor(inAngle: Bool, coordinator: RightMenuManager)
     // изменение состояние открытия приложения
     func handleOpenApplication(appName: String, coordinator: RightMenuManager)
     // изменение состояния выделение файла курсором
@@ -43,40 +36,11 @@ protocol WidgetStates {
 extension WidgetStates {
     func onEnter(coordinator: RightMenuManager) {}
     func onExit(coordinator: RightMenuManager) {}
-    
-    var frameConfig: WidgetFrameConfig {
-            switch self {
-            case is IdleState:
-                return WidgetFrameConfig(minWidth: 100, maxWidth: 300, minHeight: 40, maxHeight: 55)
-            case is BufferState:
-                return WidgetFrameConfig(minWidth: 200, maxWidth: 500, minHeight: 150, maxHeight: 500)
-            default:
-                return WidgetFrameConfig(minWidth: 150, maxWidth: 350, minHeight: 100, maxHeight: 300)
-            }
-        }
 }
 
 
 
 class IdleState: WidgetStates {
-    func handleCursor(inAngle: Bool, coordinator: RightMenuManager) {
-        if inAngle {
-            coordinator.SetupActiveAppName()
-            coordinator.SetupWindowSize()
-            
-            if coordinator.isFileFetch {
-                coordinator.changeState(to: BufferState())
-            }
-            else if coordinator.OpenApplicationName != "" {
-                coordinator.changeState(to: AppCommandsState())
-            }
-            else {
-                coordinator.changeState(to: GeneralState())
-            }
-            
-            coordinator.showWidget()
-        }
-    }
     func handleOpenApplication(appName: String, coordinator: RightMenuManager) {
         // запрос ассета
         // coordinator.activeAssetIndex = ...
@@ -93,12 +57,6 @@ class IdleState: WidgetStates {
 }
 
 class AppCommandsState: WidgetStates {
-    func handleCursor(inAngle: Bool, coordinator: RightMenuManager) {
-        if !inAngle {
-            coordinator.changeState(to: IdleState())
-            coordinator.hideWidget()
-        }
-    }
     func handleOpenApplication(appName: String, coordinator: RightMenuManager) {
         if coordinator.activeAppName != appName {
             // запрос ассета
@@ -122,12 +80,6 @@ class AppCommandsState: WidgetStates {
 }
 
 class GeneralState: WidgetStates {
-    func handleCursor(inAngle: Bool, coordinator: RightMenuManager) {
-        if !inAngle {
-            coordinator.changeState(to: IdleState())
-            coordinator.hideWidget()
-        }
-    }
     func handleOpenApplication(appName: String, coordinator: RightMenuManager) {
         // coordinator.activeAssetIndex = ...
         if coordinator.OpenApplicationName != ""{
@@ -147,12 +99,6 @@ class GeneralState: WidgetStates {
 
 class BufferState: WidgetStates
 {
-    func handleCursor(inAngle: Bool, coordinator: RightMenuManager) {
-        if !inAngle {
-            coordinator.changeState(to: IdleState())
-            coordinator.hideWidget()
-        }
-    }
     func handleOpenApplication(appName: String, coordinator: RightMenuManager) {
         
     }
