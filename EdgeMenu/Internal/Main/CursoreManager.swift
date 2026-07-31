@@ -1,5 +1,5 @@
 //
-//  GlobalManager.swift
+//  CursoreManager.swift
 //  EdgeMenu
 //
 //  Created by mac on 07.06.2026.
@@ -22,15 +22,10 @@ import AppKit
 //      определение текущего приложения
 //
 
-class GlobalManager : ObservableObject{
-    static var shared = GlobalManager()
+class CursoreManager : ObservableObject{
+    static var shared = CursoreManager()
     var log: Bool = false
 
-    // Размер текущего окна
-    var CurrentWindowSize : CGSize {
-        return NSScreen.main?.frame.size ?? .zero
-    }
-    
     // Флаг попадания курсора в угол
     @Published var CoursorDetectedInAngle: Bool = false
 
@@ -105,7 +100,10 @@ class GlobalManager : ObservableObject{
     }
     
     // Проверка на выход за пределы виджета
-    func outOfRightCornerBounds(width: CGFloat, height: CGFloat) -> Bool {
+    func outOfRightCornerBounds() -> Bool {
+        
+        let width = WidgetWindowManager.shared.getContentRect().width
+        let height = WidgetWindowManager.shared.getContentRect().height
         
         guard let MainScreen = NSScreen.main else {return false}
 
