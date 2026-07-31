@@ -112,6 +112,10 @@ class GlobalManager : ObservableObject{
         let x = MainScreen.frame.width
         let y = MainScreen.frame.height
         
+        
+        print("outOfRightCornerBounds: \((Location.x <= x-width || Location.y < y-height))")
+
+        
         return (Location.x <= x-width || Location.y < y-height)
         
     }

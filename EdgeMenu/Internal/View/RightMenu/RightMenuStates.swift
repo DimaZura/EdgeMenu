@@ -22,6 +22,7 @@ enum WidgetMode {
     case buffer         // Меню буфера
 }
 
+
 protocol WidgetStates {
     // изменение состояние наведения курсора на угол
     func handleCursor(inAngle: Bool, coordinator: RightMenuManager)
@@ -48,7 +49,7 @@ extension WidgetStates {
             case is IdleState:
                 return WidgetFrameConfig(minWidth: 100, maxWidth: 300, minHeight: 40, maxHeight: 55)
             case is BufferState:
-                return WidgetFrameConfig(minWidth: 200, maxWidth: 400, minHeight: 150, maxHeight: 400)
+                return WidgetFrameConfig(minWidth: 200, maxWidth: 500, minHeight: 150, maxHeight: 500)
             default:
                 return WidgetFrameConfig(minWidth: 150, maxWidth: 350, minHeight: 100, maxHeight: 300)
             }

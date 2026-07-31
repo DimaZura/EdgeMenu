@@ -10,8 +10,7 @@ import Combine
 import AppKit
 import UniformTypeIdentifiers
 
-/// СТРУКТУРА ВКЛАДКИ БУФЕРА
-
+// MARK: - СТРУКТУРА ВКЛАДКИ БУФЕРА
 struct BufferPage: Identifiable, Hashable {
     let id: UUID
     var title: String
@@ -50,8 +49,7 @@ struct BufferPage: Identifiable, Hashable {
     }
 }
 
-/// МЕНЕДЖЕР СУБСОСТОЯНИЯ СПИСКА ВКЛАДОК БУФЕРА
-
+// MARK: - МЕНЕДЖЕР СУБСОСТОЯНИЯ СПИСКА ВКЛАДОК БУФЕРА
 final class BufferPagesManager: ObservableObject {
     static let shared = BufferPagesManager()
 
