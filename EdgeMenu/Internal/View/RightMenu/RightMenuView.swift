@@ -36,10 +36,7 @@ struct RightMenuView: View {
             Spacer()
             
             // TODO: - Плашка для растягивания виджета
-            Rectangle()
-                .frame(width: 120, height: 3)
-                .cornerRadius(12)
-                .padding(8)
+            WidgetStretchBar(onResize: WidgetWindowManager.shared.changeHeight)
         }
 //        .liquidGlassStyle(cornerRadius: 24)
         .frame(maxWidth: .infinity, maxHeight: .infinity)

@@ -98,8 +98,8 @@ final class WidgetWindowManager {
     /// Функция создания окна виджета
     func createWidgetWindow() {
 
-        let windowWidth = windowSize.width*0.1
-        let windowHeight = windowSize.height*0.2
+        let windowWidth = windowSize.width*0.2
+        let windowHeight = windowSize.height*0.4
 
         /// Создаем окно
         let window = NSWindow(
@@ -142,6 +142,10 @@ final class WidgetWindowManager {
         
         // Удаляем .resizable из маски
         window.styleMask = [.borderless] // (или [.titled] если окно обычное)
+        
+        /// запрет на перемещение
+        window.isMovableByWindowBackground = false
+        window.isMovable = false
     }
     
     func getContentRect() -> NSRect {
@@ -149,8 +153,11 @@ final class WidgetWindowManager {
     }
     
     /// Изменение размера
-    func changeHeight(deltaY: CGFloat, minHeight: CGFloat = 200, maxHeight: CGFloat = 800) {
+    func changeHeight(deltaY: CGFloat) {
         guard let window = window else { return }
+        
+        let minHeight: CGFloat = 400
+        let maxHeight: CGFloat = 800
         
         var frame = window.frame
         let oldHeight = frame.height

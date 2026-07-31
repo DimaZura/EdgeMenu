@@ -152,7 +152,6 @@ struct PageHeader: View {
         .onHover { hovering in
             withAnimation(.easeInOut(duration: 0.15)) {
                 isHovered = hovering
-                
             }
         }
     }
