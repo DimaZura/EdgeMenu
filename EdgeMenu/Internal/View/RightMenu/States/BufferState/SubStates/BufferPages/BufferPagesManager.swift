@@ -88,7 +88,7 @@ final class BufferPagesManager: ObservableObject {
     
     /// Скопировать в буффер выделенные объекты
     func copySelectedFiles() {
-        inToOSBuffer(urls: Array(selectedFiles))
+        NSPasteboardManager.shared.replacePasteboard(Array(selectedFiles))
     }
 
     
@@ -182,16 +182,13 @@ final class BufferPagesManager: ObservableObject {
     /// Добавление файлов в буфер вкладки из буфера системы
     func addFilesFromBuffer() {
         print("addFilesFromBuffer")
-        let pasteboard = NSPasteboard.general
-
-        if let urls = pasteboard.readObjects(forClasses: [NSURL.self], options: nil) as? [URL], !urls.isEmpty {
-            print(urls)
-            newFilesToSelectedPage(urls)
-        }
+        
+        let urls = NSPasteboardManager.shared.getpasteboardFiles()
+        newFilesToSelectedPage(urls)
 
     }
     
-    /// Скопировать все объекты выделенной вкладки
+    /// Скопировать все объекты открытой вкладки
     func copyAllBufferOfPage() {
         guard let currentPage = pages.first(where: { $0.id == selectedPageId }) else { return }
         let fileList = currentPage.files
@@ -201,51 +198,7 @@ final class BufferPagesManager: ObservableObject {
         let fileURLs = fileList.filter { $0.isFileURL }
         guard !fileURLs.isEmpty else { return }
         
-        inToOSBuffer(urls: fileURLs)
+        NSPasteboardManager.shared.replacePasteboard(fileURLs)
     }
-    
-    
-    /// Скопировать объекты в буфер системы
-    func inToOSBuffer(urls: [URL]) {
-        /// открытие и очистка буфера
-        let pasteboard = NSPasteboard.general
-        pasteboard.clearContents()
-
-        
-        for url in urls {
-            
-            /// создание объекта для буфера
-            let item = NSPasteboardItem()
-            print(url)
-            
-            
-            /// получение типа объекта
-            guard let resourceValues = try? url.resourceValues(forKeys: [.contentTypeKey]),
-                  let utType = resourceValues.contentType else { return }
-            let pboardType = NSPasteboard.PasteboardType(utType.identifier)
-            
-            
-            /// получение и запись битовых данных
-            if let data = try? Data(contentsOf: url) {
-                item.setData(data, forType: pboardType)
-            }
-            
-            /// запись url и имени объекта
-            item.setString(url.absoluteString, forType: .fileURL)
-            item.setString(url.lastPathComponent, forType: .string)
-            
-            /// дублирование url старого формата
-            let plistPaths = [url.path]
-            if let plistData = try? PropertyListSerialization.data(fromPropertyList: plistPaths, format: .xml, options: 0) {
-                item.setData(plistData, forType: .init(rawValue: "NSFilenamesPboardType"))
-            }
-            
-            /// добавление объекта в буфер
-            pasteboard.writeObjects([item])
-            
-        }
-    }
-
-   
     
 }
